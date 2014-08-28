@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestRateLimiter(t *testing.T) {
+func TestTry(_ *testing.T) {
 
 	r := NewRateLimiter(3, time.Second)
 	start := time.Now()
@@ -18,6 +18,18 @@ func TestRateLimiter(t *testing.T) {
 			fmt.Println("toosoon!", i, time.Since(start))
 			time.Sleep(time.Second / 2)
 		}
+	}
+
+}
+
+func TestWait(_ *testing.T) {
+
+	r := NewRateLimiter(5, time.Millisecond)
+	start := time.Now()
+
+	for i := 0; i < 10; i++ {
+		r.Wait()
+		fmt.Println(i, time.Since(start))
 	}
 
 }
