@@ -7,16 +7,18 @@ type RateLimiter chan struct{}
 func NewRateLimiter(n int, d time.Duration) RateLimiter {
 	r := RateLimiter(make(chan struct{}, n))
 	go func() {
-	SLEEP:
-		time.Sleep(d)
 		for {
-			select {
-			case _, ok := <-r:
-				if !ok {
-					return
+		SLEEP:
+			time.Sleep(d)
+			for i := 0; i < n; i++ {
+				select {
+				case _, ok := <-r:
+					if !ok {
+						return
+					}
+				default:
+					goto SLEEP
 				}
-			default:
-				goto SLEEP
 			}
 		}
 	}()
