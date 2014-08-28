@@ -31,7 +31,7 @@ func NewRateLimiter(n int, d time.Duration) *RateLimiter {
 
 }
 
-func (r RateLimiter) Try() bool {
+func (r *RateLimiter) Try() bool {
 
 	select {
 	case r.s <- struct{}{}:
@@ -42,10 +42,10 @@ func (r RateLimiter) Try() bool {
 
 }
 
-func (r RateLimiter) Wait() {
+func (r *RateLimiter) Wait() {
 	r.s <- struct{}{}
 }
 
-func (r RateLimiter) Close() {
+func (r *RateLimiter) Close() {
 	close(r.s)
 }
