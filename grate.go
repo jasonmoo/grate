@@ -3,7 +3,7 @@ package grate
 import "time"
 
 type RateLimiter struct {
-	s chan struct{}
+	C chan struct{}
 }
 
 func NewRateLimiter(n int, d time.Duration) *RateLimiter {
@@ -16,7 +16,7 @@ func NewRateLimiter(n int, d time.Duration) *RateLimiter {
 			time.Sleep(d)
 			for i := 0; i < n; i++ {
 				select {
-				case _, ok := <-r.s:
+				case _, ok := <-r.C:
 					if !ok {
 						return
 					}
@@ -34,7 +34,7 @@ func NewRateLimiter(n int, d time.Duration) *RateLimiter {
 func (r *RateLimiter) Try() bool {
 
 	select {
-	case r.s <- struct{}{}:
+	case r.C <- struct{}{}:
 		return true
 	default:
 		return false
@@ -43,9 +43,9 @@ func (r *RateLimiter) Try() bool {
 }
 
 func (r *RateLimiter) Wait() {
-	r.s <- struct{}{}
+	r.C <- struct{}{}
 }
 
 func (r *RateLimiter) Close() {
-	close(r.s)
+	close(r.C)
 }
